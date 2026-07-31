@@ -1,0 +1,1601 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTGRogue — Campaign Start Assistant v1.0</title>
+<style>
+:root{
+  --bg:#0f0d14;--panel:#181522;--panel2:#211d2e;--txt:#f3edf7;--muted:#b9adc6;
+  --accent:#b389ff;--ok:#63d297;--warn:#ffd166;--bad:#ff6b6b;--line:#332c44;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#0f0d14,#171226);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:rgba(15,13,20,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:14px 18px}
+main{max-width:1180px;margin:0 auto;padding:18px}
+h1{font-size:1.35rem;margin:0}
+h2{font-size:1.05rem;margin:18px 0 8px}
+p{color:var(--muted)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+button{background:var(--accent);border:0;color:#120b1f;border-radius:11px;padding:10px 14px;font-weight:800;cursor:pointer}
+button.secondary{background:#332c44;color:var(--txt);border:1px solid #4a3f62}
+button.danger{background:var(--bad);color:#25080b}
+button:disabled{opacity:.45;cursor:not-allowed}
+textarea{width:100%;min-height:360px;background:#100e17;color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92rem}
+input,select{width:100%;background:#100e17;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px}
+label{display:block;color:var(--muted);font-size:.82rem;margin:8px 0 4px}
+.small{font-size:.82rem;color:var(--muted)}
+.warn{background:#2a2333;border:1px solid #514460;border-radius:12px;padding:10px;color:#eee}
+.ok{color:var(--ok)}
+.bad{color:var(--bad)}
+.pill{display:inline-block;border:1px solid var(--line);background:#100e17;border-radius:999px;padding:4px 8px;margin:2px;color:var(--muted);font-size:.78rem}
+.log{max-height:260px;overflow:auto;background:#100e17;border:1px solid var(--line);border-radius:12px;padding:10px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.8rem;white-space:pre-wrap}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+td,th{border-bottom:1px solid var(--line);padding:7px;text-align:left}
+th{color:var(--muted)}
+dialog{width:min(560px,calc(100% - 28px));background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:16px;padding:0;box-shadow:0 24px 80px rgba(0,0,0,.65)}
+dialog::backdrop{background:rgba(5,3,10,.72);backdrop-filter:blur(3px)}
+.dialog-body{padding:18px}
+.dialog-body h2{margin-top:0}
+.check-row{display:flex;gap:10px;align-items:flex-start;margin:14px 0;color:var(--txt);font-size:.95rem}
+.check-row input{width:auto;margin-top:3px}
+.header-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.header-copy{min-width:0}
+.header-help{flex:0 0 auto}.header-actions-base{display:flex;gap:8px;align-items:center;flex:0 0 auto}
+.help-dialog{width:min(780px,calc(100% - 28px))}
+.help-lead{color:var(--txt);font-size:1rem;line-height:1.5;margin:0 0 14px}
+.help-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.help-step{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:12px;line-height:1.42}
+.help-step strong{display:block;color:var(--accent);margin-bottom:4px}
+.help-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.help-button{border-left:3px solid var(--accent);background:var(--panel2);border-radius:8px;padding:9px 10px;font-size:.88rem;line-height:1.4}
+.help-tip{border:1px solid #397859;background:rgba(99,210,151,.08);border-radius:12px;padding:10px;color:#bdebd2;font-size:.88rem;line-height:1.4;margin-top:14px}
+@media(max-width:700px){.header-inner{align-items:flex-start}.header-actions-base{flex-direction:column;align-items:stretch}.help-steps,.help-buttons{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="header-copy">
+      <h1>MTGRogue — Assistant de début de campagne v1.0</h1>
+      <div class="small">Génère la collection initiale : sortie texte, une carte par ligne.</div>
+    </div>
+    <div class="header-actions-base"><button id="helpBtn" class="secondary header-help" type="button">Mode d’emploi</button><button id="aboutBtn" class="secondary header-help" type="button">À propos</button></div>
+  </div>
+</header>
+
+  <dialog id="aboutDialog" class="help-dialog" aria-labelledby="aboutTitle">
+    <div class="dialog-body">
+      <h2 id="aboutTitle">À propos de MTGRogue</h2>
+      <p class="help-lead"><strong>MTGRogue Campaign Start Assistant v1.0</strong> crée le cardpool permanent initial utilisé pour démarrer une nouvelle campagne.</p>
+      <div class="help-steps">
+        <div class="help-step"><strong>Fonctionnement</strong>La liste est générée dans ce navigateur à partir de recherches Scryfall. Le résultat n’est pas enregistré automatiquement : copie-le ou télécharge-le avant de fermer la page.</div>
+        <div class="help-step"><strong>Services externes</strong>Les recherches de cartes utilisent Scryfall. MTGRogue et Scryfall sont des projets indépendants.</div>
+      </div>
+      <div class="warn"><strong>Contenu non officiel :</strong> MTGRogue est un contenu de fan non officiel autorisé par la Fan Content Policy. Il n’est ni approuvé ni soutenu par Wizards. Certaines parties des éléments utilisés appartiennent à Wizards of the Coast. © Wizards of the Coast LLC.</div>
+      <p class="small">MTGRogue est distribué gratuitement. Conserve cette section et la mention légale si tu partages ou modifies le logiciel.</p>
+      <div class="row" style="justify-content:flex-end;margin-top:16px">
+        <button id="closeAbout" type="button">Fermer</button>
+      </div>
+    </div>
+  </dialog>
+
+<main>
+  <section class="panel">
+    <h2>Génération</h2>
+    <div class="warn">
+      L’outil tire des noms uniques via Scryfall. Contraintes appliquées : <strong>légale en Vintage</strong>, <strong>existe en papier</strong>, <strong id="magicOnlyDescription">Magic Only / sans Universes Beyond</strong>, <strong>commune</strong> pour les cartes non-terrain demandées.
+      Les terrains bicolores sont des non-bases communes ou inhabituelles, d’identité couleur strictement compatible, qui arrivent toujours engagés et produisent réellement les deux couleurs demandées.
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button id="generateBtn">Générer la collection</button>
+      <button id="magicOnlyBtn" class="secondary" type="button" aria-haspopup="dialog">Magic Only : activé</button>
+      <button id="copyBtn" class="secondary" disabled>Copier la liste</button>
+      <button id="downloadBtn" class="secondary" disabled>Télécharger .txt</button>
+      <button id="clearBtn" class="danger">Vider</button>
+    </div>
+  </section>
+
+  <dialog id="magicOnlyDialog" aria-labelledby="magicOnlyTitle">
+    <form method="dialog" class="dialog-body">
+      <h2 id="magicOnlyTitle">Paramètres Magic Only</h2>
+      <label class="check-row">
+        <input id="magicOnlyEnabled" type="checkbox" checked>
+        <span>
+          <strong>Activer le mode Magic Only</strong><br>
+          <span class="small">Exclut les cartes Universes Beyond de la collection générée.</span>
+        </span>
+      </label>
+      <label class="check-row">
+        <input id="allowLotr" type="checkbox">
+        <span>
+          <strong>Autoriser Le Seigneur des Anneaux</strong><br>
+          <span class="small">Ajoute comme exception les éditions LTR et LTC lorsque Magic Only est actif.</span>
+        </span>
+      </label>
+      <div class="row" style="justify-content:flex-end;margin-top:16px">
+        <button id="closeMagicOnlyDialog" type="submit">Fermer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle">
+    <div class="dialog-body">
+      <h2 id="helpTitle">Bienvenue dans l’assistant de début de campagne</h2>
+      <div class="small">Cette aide s’affiche uniquement lors de la première ouverture. Le bouton « Mode d’emploi » permet de la retrouver.</div>
+      <p class="help-lead">Cet assistant crée aléatoirement le <strong>cardpool permanent initial</strong> d’un nouveau joueur. Il produit une liste simple de noms de cartes, prête à être copiée dans l’assistant de run.</p>
+      <div class="help-steps">
+        <div class="help-step"><strong>1. Choisis le filtre d’univers</strong>Ouvre « Magic Only » pour garder uniquement les cartes issues de Magic, désactiver ce filtre, ou autoriser Le Seigneur des Anneaux comme exception.</div>
+        <div class="help-step"><strong>2. Lance la génération</strong>« Générer la collection » interroge Scryfall et compose 630 cartes uniques conformes aux règles du cardpool initial.</div>
+        <div class="help-step"><strong>3. Vérifie le résultat</strong>Le Résumé indique si chaque catégorie est complète. Le Journal détaille la progression et les éventuelles erreurs.</div>
+        <div class="help-step"><strong>4. Transfère la liste</strong>Copie la sortie ou télécharge le fichier texte, puis ajoute cette liste au cardpool permanent du joueur dans l’assistant de run.</div>
+      </div>
+      <div class="warn"><strong>Composition visée :</strong> 100 communes de chaque couleur, 50 communes incolores, 5 communes pour chacune des 10 paires de couleurs et 3 terrains compatibles pour chacune de ces paires.</div>
+      <h2>À quoi servent les boutons ?</h2>
+      <div class="help-buttons">
+        <div class="help-button"><strong>Générer la collection</strong> remplace la sortie actuelle par un nouveau tirage complet.</div>
+        <div class="help-button"><strong>Magic Only</strong> ouvre les paramètres du filtre Universes Beyond et de l’exception Seigneur des Anneaux.</div>
+        <div class="help-button"><strong>Copier la liste</strong> place tous les noms de cartes dans le presse-papiers, une carte par ligne.</div>
+        <div class="help-button"><strong>Télécharger .txt</strong> enregistre la même liste dans un fichier texte.</div>
+        <div class="help-button"><strong>Vider</strong> efface la sortie, le résumé et le journal sans lancer de nouveau tirage.</div>
+      </div>
+      <div class="help-tip"><strong>À savoir :</strong> la génération nécessite une connexion à Internet et peut prendre un peu de temps. Si une catégorie ne peut pas être complétée, l’assistant l’indique au lieu de produire silencieusement une collection incomplète.</div>
+      <div class="row" style="justify-content:flex-end;margin-top:16px">
+        <button id="closeHelp" type="button">Commencer</button>
+      </div>
+    </div>
+  </dialog>
+
+  <section class="panel">
+    <h2>Sortie à copier</h2>
+    <textarea id="output" placeholder="La liste apparaîtra ici, une carte par ligne."></textarea>
+    <div class="small" id="countInfo">0 carte.</div>
+  </section>
+
+  <section class="panel">
+    <h2>Résumé</h2>
+    <div id="summary" class="small">Aucune génération lancée.</div>
+  </section>
+
+  <section class="panel">
+    <h2>Journal</h2>
+    <div id="log" class="log"></div>
+  </section>
+</main>
+
+<script>
+const COLORS=[
+  ["W","Blanc"],["U","Bleu"],["B","Noir"],["R","Rouge"],["G","Vert"]
+];
+const PAIRS=[
+  ["WU","Azorius"],["UB","Dimir"],["BR","Rakdos"],["RG","Gruul"],["GW","Selesnya"],
+  ["WB","Orzhov"],["UR","Izzet"],["BG","Golgari"],["RW","Boros"],["GU","Simic"]
+];
+const BASIC_TYPES=["plains","island","swamp","mountain","forest"];
+const COLOR_SYMBOLS={W:"{W}",U:"{U}",B:"{B}",R:"{R}",G:"{G}"};
+const HELP_KEY_V18="magic_roguelite_campaign_start_help_seen_v1";
+
+const $=id=>document.getElementById(id);
+let latestRows=[];
+let latestSummary=[];
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function log(msg){$("log").textContent += `[${new Date().toLocaleTimeString()}] ${msg}\n`; $("log").scrollTop=$("log").scrollHeight;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function shuffle(arr){
+  arr=[...arr];
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function uniqueByName(cards){
+  const seen=new Set(), out=[];
+  for(const c of cards||[]){
+    const n=String(c.name||"").trim();
+    const key=n.toLowerCase();
+    if(!n||seen.has(key))continue;
+    seen.add(key);
+    out.push(c);
+  }
+  return out;
+}
+
+function qCommonMono(c){
+  return `legal:vintage game:paper rarity:common -type:land color=${c} identity=${c} -is:funny`;
+}
+
+function qCommonColorless(){
+  return `legal:vintage game:paper rarity:common -type:land colorless identity=c -is:funny`;
+}
+
+function qCommonBicolor(pair){
+  return `legal:vintage game:paper rarity:common -type:land color=${pair} identity=${pair} -is:funny`;
+}
+
+function qLands(pair){
+  const syms=pair.split("").map(c=>`o:"${COLOR_SYMBOLS[c]}"`).join(" ");
+  const noBasicTypes=BASIC_TYPES.map(t=>`-type:${t}`).join(" ");
+  return `legal:vintage game:paper type:land -type:basic ${noBasicTypes} o:"enters" o:"tapped" o:"{T}" ${syms} -is:funny`;
+}
+
+async function fetchAllSearch(q){
+  let url=`https://api.scryfall.com/cards/search?unique=cards&order=name&include_extras=false&q=${encodeURIComponent(q)}`;
+  const out=[];
+  while(url){
+    const r=await fetch(url,{headers:{Accept:"application/json"},cache:"no-store"});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok){
+      if(r.status===404)return [];
+      throw new Error(d.details||d.message||`Erreur Scryfall ${r.status}`);
+    }
+    out.push(...(d.data||[]));
+    url=d.has_more?d.next_page:null;
+    if(url)await sleep(80);
+  }
+  return uniqueByName(out);
+}
+
+function sample(cards,n){
+  return shuffle(uniqueByName(cards)).slice(0,n);
+}
+
+function normalizeOracle(s){
+  return String(s||"")
+    .replace(/[’‘]/g,"'")
+    .replace(/\r/g,"")
+    .trim();
+}
+
+function isSimpleTapDual(card,pair){
+  if(!card || !card.name)return false;
+  const type=String(card.type_line||"").toLowerCase();
+
+  if(!type.includes("land"))return false;
+  if(type.includes("basic"))return false;
+  if(BASIC_TYPES.some(t=>type.includes(t)))return false;
+
+  const oracle=normalizeOracle(card.oracle_text);
+  if(!oracle)return false;
+
+  const lines=oracle.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  if(lines.length!==2)return false;
+
+  const line1=lines[0].toLowerCase();
+  const line2=lines[1].replace(/\s+/g," ").trim();
+
+  if(!/enters (the battlefield )?tapped\.$/.test(line1))return false;
+
+  const [a,b]=pair.split("").map(c=>COLOR_SYMBOLS[c]);
+  const mana1=`{T}: Add ${a} or ${b}.`;
+  const mana2=`{T}: Add ${b} or ${a}.`;
+
+  return line2===mana1 || line2===mana2;
+}
+
+async function getCategory(label,query,count,postFilter=null,allowLess=false){
+  log(`${label} : recherche Scryfall…`);
+  const all=await fetchAllSearch(query);
+  const filtered=postFilter?all.filter(postFilter):all;
+  const picked=sample(filtered,count);
+
+  latestSummary.push({label,asked:count,found:filtered.length,picked:picked.length,ok:picked.length>=count});
+
+  if(picked.length<count){
+    const msg=`${label} : seulement ${picked.length}/${count} carte(s) trouvée(s) avec les contraintes.`;
+    if(!allowLess)throw new Error(msg);
+    log(`⚠ ${msg}`);
+  }else{
+    log(`✓ ${label} : ${picked.length}/${count} tirée(s), ${filtered.length} candidate(s).`);
+  }
+
+  return picked.map(c=>c.name);
+}
+
+async function generate(){
+  $("generateBtn").disabled=true;
+  $("copyBtn").disabled=true;
+  $("downloadBtn").disabled=true;
+  $("output").value="";
+  $("summary").innerHTML="Génération en cours…";
+  $("log").textContent="";
+  latestRows=[];
+  latestSummary=[];
+
+  const allowLessLands=false;
+
+  try{
+    for(const [c,label] of COLORS){
+      const names=await getCategory(`Communes ${label}`,qCommonMono(c),100,null,false);
+      latestRows.push(...names);
+      await sleep(120);
+    }
+
+    latestRows.push(...await getCategory("Communes sans couleur",qCommonColorless(),50,null,false));
+    await sleep(120);
+
+    for(const [pair,label] of PAIRS){
+      latestRows.push(...await getCategory(`Communes bicolores ${label} (${pair})`,qCommonBicolor(pair),5,null,false));
+      await sleep(120);
+    }
+
+    for(const [pair,label] of PAIRS){
+      const names=await getCategory(
+        `Terrains ${label} (${pair})`,
+        qLands(pair),
+        3,
+        c=>isSimpleTapDual(c,pair),
+        allowLessLands
+      );
+      latestRows.push(...names);
+      await sleep(120);
+    }
+
+    $("output").value=latestRows.join("\n");
+    $("countInfo").textContent=`${latestRows.length} ligne(s). Objectif théorique : 630.`;
+
+    renderSummary();
+    $("copyBtn").disabled=false;
+    $("downloadBtn").disabled=false;
+    log("Génération terminée.");
+  }catch(e){
+    $("summary").innerHTML=`<span class="bad">Erreur : ${esc(e.message||String(e))}</span>`;
+    log(`ERREUR : ${e.message||e}`);
+  }finally{
+    $("generateBtn").disabled=false;
+  }
+}
+
+function renderSummary(){
+  let ok=latestSummary.filter(x=>x.ok).length;
+  let total=latestSummary.length;
+  const rows=latestSummary.map(s=>
+    `<tr><td>${esc(s.label)}</td><td>${s.picked}/${s.asked}</td><td>${s.found}</td><td class="${s.ok?"ok":"bad"}">${s.ok?"OK":"Incomplet"}</td></tr>`
+  ).join("");
+  $("summary").innerHTML=
+    `<div class="row"><span class="pill">${latestRows.length} cartes en sortie</span><span class="pill">${ok}/${total} catégories complètes</span></div>
+    <table><thead><tr><th>Catégorie</th><th>Tirées</th><th>Candidates strictes</th><th>État</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+async function copyOutput(){
+  await navigator.clipboard.writeText($("output").value);
+  log("Liste copiée dans le presse-papiers.");
+}
+
+function downloadOutput(){
+  const blob=new Blob([$("output").value],{type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="MTGRogue_Initial_Card_Pool.txt";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+$("generateBtn").onclick=()=>generate();
+$("copyBtn").onclick=()=>copyOutput().catch(e=>log(`Copie impossible : ${e.message||e}`));
+$("downloadBtn").onclick=downloadOutput;
+$("clearBtn").onclick=()=>{
+  latestRows=[];
+  latestSummary=[];
+  $("output").value="";
+  $("summary").textContent="Aucune génération lancée.";
+  $("countInfo").textContent="0 carte.";
+  $("copyBtn").disabled=true;
+  $("downloadBtn").disabled=true;
+  $("log").textContent="";
+};
+
+/* ===== PATCH v1.1 : correction du tirage des communes incolores =====
+   La requête v1.0 utilisait "colorless identity=c", trop fragile côté Scryfall.
+   On passe à la syntaxe Scryfall couleur/identité : c:c id:c.
+*/
+
+function qCommonColorless(){
+  return `legal:vintage game:paper rarity:common -type:land c:c id:c -is:funny`;
+}
+
+
+/* ===== PATCH v1.2 : requêtes Scryfall plus robustes =====
+   - Requête incolore corrigée sans "id:c" : c:c + exclusion des 5 identités colorées.
+   - Beaucoup moins de pages Scryfall chargées pour les grosses catégories.
+   - Retry automatique en cas de NetworkError/transitoire.
+   - Message d'erreur plus utile avec la catégorie et la requête.
+*/
+
+const SCRYFALL_PAGE_SIZE_V12 = 175;
+
+function qCommonMono(c){
+  c=String(c||"").toLowerCase();
+  return `legal:vintage game:paper rarity:common -type:land c=${c} id=${c} -is:funny`;
+}
+
+function qCommonColorless(){
+  return `legal:vintage game:paper rarity:common -type:land c:c -id:w -id:u -id:b -id:r -id:g -is:funny`;
+}
+
+function qCommonBicolor(pair){
+  pair=String(pair||"").toLowerCase();
+  return `legal:vintage game:paper rarity:common -type:land c=${pair} id=${pair} -is:funny`;
+}
+
+function qLands(pair){
+  const syms=pair.split("").map(c=>`o:"${COLOR_SYMBOLS[c]}"`).join(" ");
+  const noBasicTypes=BASIC_TYPES.map(t=>`-type:${t}`).join(" ");
+  return `legal:vintage game:paper type:land -type:basic ${noBasicTypes} o:"tapped" o:"{T}" ${syms} -is:funny`;
+}
+
+function searchUrlV12(q,page=1){
+  const sep=q.includes("?") ? "&" : "?";
+  return `https://api.scryfall.com/cards/search?unique=cards&order=name&page=${page}&include_extras=false&q=${encodeURIComponent(q)}&_=${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
+
+async function fetchJsonRetryV12(url,label="",tries=3){
+  let lastErr=null;
+  for(let attempt=1;attempt<=tries;attempt++){
+    try{
+      const r=await fetch(url,{cache:"no-store"});
+      const d=await r.json().catch(()=>({}));
+
+      if(!r.ok){
+        if(r.status===404)return {data:[],has_more:false,total_cards:0,not_found:true};
+        throw new Error(d.details||d.message||`Erreur Scryfall ${r.status}`);
+      }
+
+      return d;
+    }catch(e){
+      lastErr=e;
+      if(attempt<tries){
+        log(`⚠ ${label||"Scryfall"} : ${e.message||e}. Nouvelle tentative ${attempt+1}/${tries}…`);
+        await sleep(900*attempt);
+      }
+    }
+  }
+
+  throw new Error(`${label||"Scryfall"} inaccessible après ${tries} tentative(s) : ${lastErr?.message||lastErr}`);
+}
+
+async function fetchSearchPageV12(q,page,label){
+  const d=await fetchJsonRetryV12(searchUrlV12(q,page),label,3);
+  return {
+    data:uniqueByName(d.data||[]),
+    total:Number(d.total_cards||0),
+    has_more:!!d.has_more
+  };
+}
+
+async function fetchCandidatePoolV12(q,target,label,postFilter=null){
+  const first=await fetchSearchPageV12(q,1,label);
+  if(!first.total && !first.data.length)return [];
+
+  const pageCount=Math.max(1,Math.ceil((first.total||first.data.length)/SCRYFALL_PAGE_SIZE_V12));
+  const pages=shuffle([...Array(pageCount)].map((_,i)=>i+1));
+
+  const byName=new Map();
+  function addCards(cards){
+    for(const c of cards||[]){
+      if(postFilter && !postFilter(c))continue;
+      const key=String(c.name||"").toLowerCase();
+      if(key&&!byName.has(key))byName.set(key,c);
+    }
+  }
+
+  addCards(first.data);
+
+  // Pour les terrains stricts, on parcourt davantage car beaucoup de cartes sont filtrées ensuite.
+  const desiredPool=postFilter ? target : Math.min(Math.max(target*2, target+25), 220);
+
+  for(const page of pages){
+    if(byName.size>=desiredPool)break;
+    if(page===1)continue;
+    await sleep(120);
+    const d=await fetchSearchPageV12(q,page,label);
+    addCards(d.data);
+  }
+
+  // Fallback : si les pages aléatoires n'ont pas suffi, on complète depuis toutes les pages.
+  if(byName.size<target && pageCount>1){
+    for(let page=1;page<=pageCount;page++){
+      if(byName.size>=target)break;
+      if(pages.includes(page) && page!==1)continue;
+      await sleep(120);
+      const d=page===1?first:await fetchSearchPageV12(q,page,label);
+      addCards(d.data);
+    }
+  }
+
+  return [...byName.values()];
+}
+
+async function getCategory(label,query,count,postFilter=null,allowLess=false){
+  log(`${label} : recherche Scryfall…`);
+  log(`Requête : ${query}`);
+
+  let filtered;
+  try{
+    filtered=await fetchCandidatePoolV12(query,count,label,postFilter);
+  }catch(e){
+    throw new Error(`${label} — ${e.message||e}\nRequête : ${query}`);
+  }
+
+  const picked=sample(filtered,count);
+
+  latestSummary.push({label,asked:count,found:filtered.length,picked:picked.length,ok:picked.length>=count});
+
+  if(picked.length<count){
+    const msg=`${label} : seulement ${picked.length}/${count} carte(s) trouvée(s) avec les contraintes.`;
+    if(!allowLess)throw new Error(`${msg}\nRequête : ${query}`);
+    log(`⚠ ${msg}`);
+  }else{
+    log(`✓ ${label} : ${picked.length}/${count} tirée(s), ${filtered.length} candidate(s) chargée(s).`);
+  }
+
+  return picked.map(c=>c.name);
+}
+
+
+/* ===== PATCH v1.3 : requête incolore validée =====
+   Remplace la requête incolore par celle qui donne bien un large pool Scryfall :
+   color=C commander:c (game:paper) legal:vintage prefer:best -t:land r:c
+*/
+
+function qCommonColorless(){
+  return `color=C commander:c (game:paper) legal:vintage prefer:best -t:land r:c`;
+}
+
+
+/* ===== PATCH Magic Only v1.0 : collection initiale sans Universes Beyond =====
+   Ajoute le filtre Magic Only à toutes les requêtes Scryfall.
+   On utilise is:notuniversesbeyond comme filtre principal, avec quelques exclusions
+   explicites de sécurité pour les codes UB qui ont déjà posé problème dans les
+   autres outils du projet.
+*/
+
+function magicOnlyFilterV10(){
+  return `is:notuniversesbeyond -set:ltr -set:ltc -set:fin -set:fic -set:msh -set:spm -set:who -set:40k -set:rex -set:bot -set:trk`;
+}
+
+function withMagicOnlyV10(q){
+  q=String(q||"").trim();
+  if(!q)return magicOnlyFilterV10();
+  if(q.includes("is:notuniversesbeyond"))return q;
+  return `${q} ${magicOnlyFilterV10()}`;
+}
+
+function qCommonMono(c){
+  c=String(c||"").toLowerCase();
+  return withMagicOnlyV10(`legal:vintage game:paper rarity:common -type:land c=${c} id=${c} -is:funny`);
+}
+
+function qCommonColorless(){
+  return withMagicOnlyV10(`color=C commander:c (game:paper) legal:vintage prefer:best -t:land r:c`);
+}
+
+function qCommonBicolor(pair){
+  pair=String(pair||"").toLowerCase();
+  return withMagicOnlyV10(`legal:vintage game:paper rarity:common -type:land c=${pair} id=${pair} -is:funny`);
+}
+
+function qLands(pair){
+  const syms=pair.split("").map(c=>`o:"${COLOR_SYMBOLS[c]}"`).join(" ");
+  const noBasicTypes=BASIC_TYPES.map(t=>`-type:${t}`).join(" ");
+  return withMagicOnlyV10(`legal:vintage game:paper type:land -type:basic ${noBasicTypes} o:"tapped" o:"{T}" ${syms} -is:funny`);
+}
+
+
+/* ===== PATCH Magic Only v1.1 : terrains toujours engagés =====
+   Le filtre précédent pouvait laisser passer des terrains conditionnels du type :
+   "arrive engagé sauf si / à moins de révéler une carte…".
+   On force maintenant une règle plus stricte :
+   - aucune mention de "unless", "if you don't", "reveal", "from your hand" ;
+   - aucune capacité déclenchée ou conditionnelle ;
+   - oracle exactement équivalent à :
+     "[Nom] enters tapped." ou "This land enters tapped."
+     "{T}: Add {A} or {B}."
+*/
+
+function isSimpleTapDual(card,pair){
+  if(!card || !card.name)return false;
+
+  const type=String(card.type_line||"").toLowerCase();
+  if(!type.includes("land"))return false;
+  if(type.includes("basic"))return false;
+  if(BASIC_TYPES.some(t=>type.includes(t)))return false;
+
+  const oracle=normalizeOracle(card.oracle_text);
+  if(!oracle)return false;
+
+  const lower=oracle.toLowerCase();
+
+  // Exclusions explicites des terrains qui peuvent arriver dégagés ou ont une condition.
+  if(/\bunless\b/.test(lower))return false;
+  if(/\bif you don't\b/.test(lower))return false;
+  if(/\bif you do not\b/.test(lower))return false;
+  if(/\breveal\b/.test(lower))return false;
+  if(/\bfrom your hand\b/.test(lower))return false;
+  if(/\bmay enter\b/.test(lower))return false;
+  if(/\bmay have\b/.test(lower))return false;
+  if(/\bpay\b/.test(lower))return false;
+  if(/\bwhen\b/.test(lower))return false;
+  if(/\bwhenever\b/.test(lower))return false;
+  if(/\bas\b/.test(lower) && /\benters\b/.test(lower))return false;
+
+  const lines=oracle.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  if(lines.length!==2)return false;
+
+  const line1=lines[0].replace(/\s+/g," ").trim();
+  const line1Lower=line1.toLowerCase();
+  const name=String(card.name||"").split(" // ")[0].trim().replace(/[.*+?^${}()|[\]\\]/g,"\\$&").toLowerCase();
+
+  const exactTapped =
+    line1Lower==="this land enters tapped." ||
+    line1Lower===`${String(card.name||"").split(" // ")[0].trim().toLowerCase()} enters tapped.` ||
+    line1Lower===`${String(card.name||"").split(" // ")[0].trim().toLowerCase()} enters the battlefield tapped.`;
+
+  if(!exactTapped)return false;
+
+  const line2=lines[1].replace(/\s+/g," ").trim();
+  const [a,b]=pair.split("").map(c=>COLOR_SYMBOLS[c]);
+  const mana1=`{T}: Add ${a} or ${b}.`;
+  const mana2=`{T}: Add ${b} or ${a}.`;
+
+  return line2===mana1 || line2===mana2;
+}
+
+function qLands(pair){
+  const syms=pair.split("").map(c=>`o:"${COLOR_SYMBOLS[c]}"`).join(" ");
+  const noBasicTypes=BASIC_TYPES.map(t=>`-type:${t}`).join(" ");
+  // On exclut déjà les textes conditionnels côté requête pour limiter les candidats.
+  return withMagicOnlyV10(`legal:vintage game:paper type:land -type:basic ${noBasicTypes} o:"enters tapped" o:"{T}" ${syms} -o:unless -o:reveal -o:"from your hand" -o:"if you don't" -o:"if you do not" -o:pay -o:when -o:whenever -is:funny`);
+}
+
+
+/* ===== PATCH Magic Only v1.2 : lands bicolores 1 typé + 2 non typés =====
+   Nouvelle règle :
+   - pour chaque bicolorité : 1 terrain non-base avec les deux types de base,
+     qui arrive toujours engagé et n'a pas d'autre texte ;
+   - puis 2 terrains non-bases sans types de base, qui arrivent toujours engagés
+     et produisent les deux couleurs.
+*/
+
+const BASIC_TYPE_BY_COLOR_V12 = {
+  W:"plains",
+  U:"island",
+  B:"swamp",
+  R:"mountain",
+  G:"forest"
+};
+
+function pairBasicTypesV12(pair){
+  return pair.split("").map(c=>BASIC_TYPE_BY_COLOR_V12[c]).filter(Boolean);
+}
+
+function qTypedLandV12(pair){
+  const types=pairBasicTypesV12(pair).map(t=>`type:${t}`).join(" ");
+  return withMagicOnlyV10(`legal:vintage game:paper type:land -type:basic ${types} o:"enters tapped" -o:unless -o:reveal -o:"from your hand" -o:"if you don't" -o:"if you do not" -o:pay -o:when -o:whenever -is:funny`);
+}
+
+function qUntypedTapDualV12(pair){
+  const syms=pair.split("").map(c=>`o:"${COLOR_SYMBOLS[c]}"`).join(" ");
+  const noBasicTypes=BASIC_TYPES.map(t=>`-type:${t}`).join(" ");
+  return withMagicOnlyV10(`legal:vintage game:paper type:land -type:basic ${noBasicTypes} o:"enters tapped" o:"{T}" ${syms} -o:unless -o:reveal -o:"from your hand" -o:"if you don't" -o:"if you do not" -o:pay -o:when -o:whenever -is:funny`);
+}
+
+// Compat : qLands correspond maintenant aux 2 terrains non typés.
+function qLands(pair){
+  return qUntypedTapDualV12(pair);
+}
+
+function isOnlyTappedLineV12(line,cardName){
+  const lineLower=String(line||"").replace(/\s+/g," ").trim().toLowerCase();
+  const nm=String(cardName||"").split(" // ")[0].trim().toLowerCase();
+  return lineLower==="this land enters tapped." ||
+         lineLower==="this land enters the battlefield tapped." ||
+         lineLower===`${nm} enters tapped.` ||
+         lineLower===`${nm} enters the battlefield tapped.`;
+}
+
+function hasConditionalOrExtraLandTextV12(oracle){
+  const lower=String(oracle||"").toLowerCase();
+
+  if(/\bunless\b/.test(lower))return true;
+  if(/\bif you don't\b/.test(lower))return true;
+  if(/\bif you do not\b/.test(lower))return true;
+  if(/\breveal\b/.test(lower))return true;
+  if(/\bfrom your hand\b/.test(lower))return true;
+  if(/\bmay enter\b/.test(lower))return true;
+  if(/\bmay have\b/.test(lower))return true;
+  if(/\bpay\b/.test(lower))return true;
+  if(/\bwhen\b/.test(lower))return true;
+  if(/\bwhenever\b/.test(lower))return true;
+  if(/\bas\b/.test(lower) && /\benters\b/.test(lower))return true;
+
+  return false;
+}
+
+function isAlwaysTappedTypedDualV12(card,pair){
+  if(!card || !card.name)return false;
+
+  const type=String(card.type_line||"").toLowerCase();
+  if(!type.includes("land"))return false;
+  if(/\bbasic\b/.test(type))return false;
+
+  const needed=pairBasicTypesV12(pair);
+  if(needed.length!==2)return false;
+  if(!needed.every(t=>type.includes(t)))return false;
+
+  const oracle=normalizeOracle(card.oracle_text);
+  if(!oracle)return false;
+  if(hasConditionalOrExtraLandTextV12(oracle))return false;
+
+  const lines=oracle.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  if(lines.length!==1)return false;
+
+  return isOnlyTappedLineV12(lines[0],card.name);
+}
+
+function isSimpleTapDual(card,pair){
+  if(!card || !card.name)return false;
+
+  const type=String(card.type_line||"").toLowerCase();
+  if(!type.includes("land"))return false;
+  if(type.includes("basic"))return false;
+  if(BASIC_TYPES.some(t=>type.includes(t)))return false;
+
+  const oracle=normalizeOracle(card.oracle_text);
+  if(!oracle)return false;
+  if(hasConditionalOrExtraLandTextV12(oracle))return false;
+
+  const lines=oracle.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  if(lines.length!==2)return false;
+  if(!isOnlyTappedLineV12(lines[0],card.name))return false;
+
+  const line2=lines[1].replace(/\s+/g," ").trim();
+  const [a,b]=pair.split("").map(c=>COLOR_SYMBOLS[c]);
+  const mana1=`{T}: Add ${a} or ${b}.`;
+  const mana2=`{T}: Add ${b} or ${a}.`;
+
+  return line2===mana1 || line2===mana2;
+}
+
+async function generate(){
+  $("generateBtn").disabled=true;
+  $("copyBtn").disabled=true;
+  $("downloadBtn").disabled=true;
+  $("output").value="";
+  $("summary").innerHTML="Génération en cours…";
+  $("log").textContent="";
+  latestRows=[];
+  latestSummary=[];
+
+  const allowLessLands=false;
+
+  try{
+    for(const [c,label] of COLORS){
+      const names=await getCategory(`Communes ${label}`,qCommonMono(c),100,null,false);
+      latestRows.push(...names);
+      await sleep(120);
+    }
+
+    latestRows.push(...await getCategory("Communes sans couleur",qCommonColorless(),50,null,false));
+    await sleep(120);
+
+    for(const [pair,label] of PAIRS){
+      latestRows.push(...await getCategory(`Communes bicolores ${label} (${pair})`,qCommonBicolor(pair),5,null,false));
+      await sleep(120);
+    }
+
+    for(const [pair,label] of PAIRS){
+      const typed=await getCategory(
+        `Terrain typé ${label} (${pair})`,
+        qTypedLandV12(pair),
+        1,
+        c=>isAlwaysTappedTypedDualV12(c,pair),
+        allowLessLands
+      );
+      latestRows.push(...typed);
+      await sleep(120);
+
+      const untyped=await getCategory(
+        `Terrains non typés ${label} (${pair})`,
+        qUntypedTapDualV12(pair),
+        2,
+        c=>isSimpleTapDual(c,pair),
+        allowLessLands
+      );
+      latestRows.push(...untyped);
+      await sleep(120);
+    }
+
+    $("output").value=latestRows.join("\n");
+    $("countInfo").textContent=`${latestRows.length} ligne(s). Objectif théorique : 630.`;
+
+    renderSummary();
+    $("copyBtn").disabled=false;
+    $("downloadBtn").disabled=false;
+    log("Génération terminée.");
+  }catch(e){
+    $("summary").innerHTML=`<span class="bad">Erreur : ${esc(e.message||String(e))}</span>`;
+    log(`ERREUR : ${e.message||e}`);
+  }finally{
+    $("generateBtn").disabled=false;
+  }
+}
+
+
+/* ===== PATCH Magic Only v1.3 : lands bicolores simplifiés =====
+   Annule la règle 1 terrain typé + 2 non typés.
+   Nouvelle règle :
+   - 3 terrains par bicolorité ;
+   - ils doivent pouvoir uniquement arriver engagés ;
+   - ils peuvent avoir d'autres capacités ;
+   - ils ne doivent pas être rares ou mythiques ;
+   - ils restent Magic Only, papier, légaux Vintage.
+*/
+
+function qTappedDualAnyV13(pair){
+  const syms=pair.split("").map(c=>`o:"${COLOR_SYMBOLS[c]}"`).join(" ");
+  return withMagicOnlyV10(`legal:vintage game:paper type:land (rarity:common or rarity:uncommon) o:"enters tapped" o:"{T}" ${syms} -o:unless -o:reveal -o:"from your hand" -o:"if you don't" -o:"if you do not" -o:"may enter" -o:pay -is:funny`);
+}
+
+// Compatibilité : qLands redevient la requête unique des 3 terrains.
+function qLands(pair){
+  return qTappedDualAnyV13(pair);
+}
+
+function isAlwaysTappedLandAnyV13(card,pair){
+  if(!card || !card.name)return false;
+
+  const type=String(card.type_line||"").toLowerCase();
+  if(!type.includes("land"))return false;
+  if(/\bbasic\b/.test(type))return false;
+
+  const rarity=String(card.rarity||"").toLowerCase();
+  if(rarity==="rare" || rarity==="mythic")return false;
+
+  const oracle=normalizeOracle(card.oracle_text);
+  if(!oracle)return false;
+
+  const lower=oracle.toLowerCase();
+
+  // Ces textes indiquent que le terrain peut parfois arriver dégagé ou que
+  // l'arrivée engagée dépend d'un choix / d'une condition.
+  if(/\bunless\b/.test(lower))return false;
+  if(/\bif you don't\b/.test(lower))return false;
+  if(/\bif you do not\b/.test(lower))return false;
+  if(/\breveal\b/.test(lower))return false;
+  if(/\bfrom your hand\b/.test(lower))return false;
+  if(/\bmay enter\b/.test(lower))return false;
+  if(/\bmay have\b/.test(lower))return false;
+  if(/\bpay\b/.test(lower) && /\benters\b/.test(lower))return false;
+
+  // Il doit y avoir une affirmation simple d'arrivée engagée.
+  if(!/\benters (the battlefield )?tapped\b/.test(lower))return false;
+
+  // Il doit produire les deux couleurs demandées quelque part dans son texte.
+  const [a,b]=pair.split("").map(c=>COLOR_SYMBOLS[c]);
+  if(!oracle.includes(a) || !oracle.includes(b))return false;
+  if(!oracle.includes("{T}"))return false;
+
+  return true;
+}
+
+// L'ancien nom de filtre pointe maintenant vers la règle souple.
+function isSimpleTapDual(card,pair){
+  return isAlwaysTappedLandAnyV13(card,pair);
+}
+
+async function generate(){
+  $("generateBtn").disabled=true;
+  $("copyBtn").disabled=true;
+  $("downloadBtn").disabled=true;
+  $("output").value="";
+  $("summary").innerHTML="Génération en cours…";
+  $("log").textContent="";
+  latestRows=[];
+  latestSummary=[];
+
+  const allowLessLands=false;
+
+  try{
+    for(const [c,label] of COLORS){
+      const names=await getCategory(`Communes ${label}`,qCommonMono(c),100,null,false);
+      latestRows.push(...names);
+      await sleep(120);
+    }
+
+    latestRows.push(...await getCategory("Communes sans couleur",qCommonColorless(),50,null,false));
+    await sleep(120);
+
+    for(const [pair,label] of PAIRS){
+      latestRows.push(...await getCategory(`Communes bicolores ${label} (${pair})`,qCommonBicolor(pair),5,null,false));
+      await sleep(120);
+    }
+
+    for(const [pair,label] of PAIRS){
+      const lands=await getCategory(
+        `Terrains engagés ${label} (${pair})`,
+        qTappedDualAnyV13(pair),
+        3,
+        c=>isAlwaysTappedLandAnyV13(c,pair),
+        allowLessLands
+      );
+      latestRows.push(...lands);
+      await sleep(120);
+    }
+
+    $("output").value=latestRows.join("\n");
+    $("countInfo").textContent=`${latestRows.length} ligne(s). Objectif théorique : 630.`;
+
+    renderSummary();
+    $("copyBtn").disabled=false;
+    $("downloadBtn").disabled=false;
+    log("Génération terminée.");
+  }catch(e){
+    $("summary").innerHTML=`<span class="bad">Erreur : ${esc(e.message||String(e))}</span>`;
+    log(`ERREUR : ${e.message||e}`);
+  }finally{
+    $("generateBtn").disabled=false;
+  }
+}
+
+
+/* ===== PATCH Magic Only v1.4 : lands engagés, capacités autorisées, types autorisés =====
+   Ajustement de la v1.3 :
+   - les terrains typés sont acceptés même si leur capacité de mana n'est pas écrite dans l'oracle ;
+   - la requête Scryfall est plus large, puis le filtre JS vérifie la bicolorité.
+*/
+
+function landMatchesPairV14(card,pair){
+  const oracle=normalizeOracle(card?.oracle_text||"");
+  const type=String(card?.type_line||"").toLowerCase();
+  const [a,b]=pair.split("");
+  const symA=COLOR_SYMBOLS[a], symB=COLOR_SYMBOLS[b];
+
+  // Terrains typés : les types de base donnent les capacités de mana.
+  const basicTypes=pairBasicTypesV12(pair);
+  if(basicTypes.length===2 && basicTypes.every(t=>type.includes(t)))return true;
+
+  // Terrains non typés : on veut voir les deux symboles de mana dans le texte.
+  return oracle.includes(symA) && oracle.includes(symB);
+}
+
+function qTappedDualAnyV13(pair){
+  return withMagicOnlyV10(`legal:vintage game:paper type:land (rarity:common or rarity:uncommon) o:"enters tapped" -o:unless -o:reveal -o:"from your hand" -o:"if you don't" -o:"if you do not" -o:"may enter" -o:pay -is:funny`);
+}
+
+function qLands(pair){
+  return qTappedDualAnyV13(pair);
+}
+
+function isAlwaysTappedLandAnyV13(card,pair){
+  if(!card || !card.name)return false;
+
+  const type=String(card.type_line||"").toLowerCase();
+  if(!type.includes("land"))return false;
+  if(/\bbasic\b/.test(type))return false;
+
+  const rarity=String(card.rarity||"").toLowerCase();
+  if(rarity==="rare" || rarity==="mythic")return false;
+
+  const oracle=normalizeOracle(card.oracle_text);
+  if(!oracle)return false;
+
+  const lower=oracle.toLowerCase();
+
+  if(/\bunless\b/.test(lower))return false;
+  if(/\bif you don't\b/.test(lower))return false;
+  if(/\bif you do not\b/.test(lower))return false;
+  if(/\breveal\b/.test(lower))return false;
+  if(/\bfrom your hand\b/.test(lower))return false;
+  if(/\bmay enter\b/.test(lower))return false;
+  if(/\bmay have\b/.test(lower))return false;
+  if(/\bpay\b/.test(lower) && /\benters\b/.test(lower))return false;
+
+  if(!/\benters (the battlefield )?tapped\b/.test(lower))return false;
+  if(!landMatchesPairV14(card,pair))return false;
+
+  return true;
+}
+
+function isSimpleTapDual(card,pair){
+  return isAlwaysTappedLandAnyV13(card,pair);
+}
+
+
+/* ===== PATCH Magic Only v1.5 : identité couleur exacte des terrains =====
+   Les terrains tirés pour une bicolorité doivent avoir exactement l'identité
+   couleur de cette bicolorité. Exemple WU : identité WU, pas W, pas U, pas WUR.
+*/
+
+function pairKeyV15(pair){
+  return String(pair||"").toUpperCase().split("").sort().join("");
+}
+
+function cardIdentityKeyV15(card){
+  return (card?.color_identity||[]).map(x=>String(x).toUpperCase()).sort().join("");
+}
+
+function hasExactPairIdentityV15(card,pair){
+  return cardIdentityKeyV15(card)===pairKeyV15(pair);
+}
+
+function qTappedDualAnyV13(pair){
+  const p=String(pair||"").toLowerCase();
+  return withMagicOnlyV10(`legal:vintage game:paper type:land (rarity:common or rarity:uncommon) id=${p} o:"enters tapped" -o:unless -o:reveal -o:"from your hand" -o:"if you don't" -o:"if you do not" -o:"may enter" -o:pay -is:funny`);
+}
+
+function qLands(pair){
+  return qTappedDualAnyV13(pair);
+}
+
+function isAlwaysTappedLandAnyV13(card,pair){
+  if(!card || !card.name)return false;
+
+  // Nouvelle contrainte : identité couleur exactement égale à la bicolorité.
+  if(!hasExactPairIdentityV15(card,pair))return false;
+
+  const type=String(card.type_line||"").toLowerCase();
+  if(!type.includes("land"))return false;
+  if(/\bbasic\b/.test(type))return false;
+
+  const rarity=String(card.rarity||"").toLowerCase();
+  if(rarity==="rare" || rarity==="mythic")return false;
+
+  const oracle=normalizeOracle(card.oracle_text);
+  if(!oracle)return false;
+
+  const lower=oracle.toLowerCase();
+
+  if(/\bunless\b/.test(lower))return false;
+  if(/\bif you don't\b/.test(lower))return false;
+  if(/\bif you do not\b/.test(lower))return false;
+  if(/\breveal\b/.test(lower))return false;
+  if(/\bfrom your hand\b/.test(lower))return false;
+  if(/\bmay enter\b/.test(lower))return false;
+  if(/\bmay have\b/.test(lower))return false;
+  if(/\bpay\b/.test(lower) && /\benters\b/.test(lower))return false;
+
+  if(!/\benters (the battlefield )?tapped\b/.test(lower))return false;
+
+  // On garde la vérification que le terrain correspond bien à la paire par
+  // les symboles de mana ou par ses types de terrain de base.
+  if(!landMatchesPairV14(card,pair))return false;
+
+  return true;
+}
+
+function isSimpleTapDual(card,pair){
+  return isAlwaysTappedLandAnyV13(card,pair);
+}
+
+
+/* ===== PATCH Magic Only v1.6 : terrains qui produisent vraiment les deux couleurs =====
+   Correction : l'identité couleur exacte ne suffit pas.
+   Exemple rejeté désormais : Bretagard Stronghold, identité GW mais ne produit que G.
+   Un terrain passe seulement si :
+   - il a exactement l'identité de la bicolorité ;
+   - il arrive toujours engagé ;
+   - il est commun ou unco ;
+   - et il peut réellement produire les deux couleurs :
+     soit par deux types de terrain de base, soit par une capacité de mana qui ajoute A ou B.
+*/
+
+function hasBothBasicLandTypesForPairV16(card,pair){
+  const type=String(card?.type_line||"").toLowerCase();
+  const needed=pairBasicTypesV12(pair);
+  return needed.length===2 && needed.every(t=>type.includes(t));
+}
+
+function oracleHasTapAddBothColorsV16(card,pair){
+  const oracle=normalizeOracle(card?.oracle_text||"");
+  if(!oracle)return false;
+
+  const [a,b]=pair.split("").map(c=>COLOR_SYMBOLS[c]);
+  const lines=oracle.split(/\n+/).map(x=>x.replace(/\s+/g," ").trim()).filter(Boolean);
+
+  return lines.some(line=>{
+    if(!line.includes("{T}") || !/\bAdd\b/i.test(line))return false;
+
+    // Cas standard : "{T}: Add {G} or {W}."
+    if(line.includes(a) && line.includes(b) && /\bor\b/i.test(line))return true;
+
+    // Cas formulation générique : "{T}: Add one mana of any color." ou "one mana of any type..."
+    if(/add one mana of any color/i.test(line))return true;
+    if(/add one mana of any type/i.test(line))return true;
+
+    // Cas "Add two mana in any combination of colors" : suffisant pour produire les deux.
+    if(/any combination of colors/i.test(line))return true;
+
+    return false;
+  });
+}
+
+function landProducesBothPairColorsV16(card,pair){
+  return hasBothBasicLandTypesForPairV16(card,pair) || oracleHasTapAddBothColorsV16(card,pair);
+}
+
+function landMatchesPairV14(card,pair){
+  return landProducesBothPairColorsV16(card,pair);
+}
+
+function isAlwaysTappedLandAnyV13(card,pair){
+  if(!card || !card.name)return false;
+
+  if(!hasExactPairIdentityV15(card,pair))return false;
+
+  const type=String(card.type_line||"").toLowerCase();
+  if(!type.includes("land"))return false;
+  if(/\bbasic\b/.test(type))return false;
+
+  const rarity=String(card.rarity||"").toLowerCase();
+  if(rarity==="rare" || rarity==="mythic")return false;
+
+  const oracle=normalizeOracle(card.oracle_text);
+  if(!oracle)return false;
+
+  const lower=oracle.toLowerCase();
+
+  if(/\bunless\b/.test(lower))return false;
+  if(/\bif you don't\b/.test(lower))return false;
+  if(/\bif you do not\b/.test(lower))return false;
+  if(/\breveal\b/.test(lower))return false;
+  if(/\bfrom your hand\b/.test(lower))return false;
+  if(/\bmay enter\b/.test(lower))return false;
+  if(/\bmay have\b/.test(lower))return false;
+  if(/\bpay\b/.test(lower) && /\benters\b/.test(lower))return false;
+
+  if(!/\benters (the battlefield )?tapped\b/.test(lower))return false;
+
+  if(!landProducesBothPairColorsV16(card,pair))return false;
+
+  return true;
+}
+
+function isSimpleTapDual(card,pair){
+  return isAlwaysTappedLandAnyV13(card,pair);
+}
+
+/* ===== PATCH v1.7 : paramètres Magic Only =====
+   - le filtre Magic Only peut être activé ou désactivé ;
+   - Le Seigneur des Anneaux (LTR et LTC) peut être autorisé comme exception ;
+   - une génération exige toujours les 3 terrains de chaque bicolorité.
+*/
+
+const MAGIC_ONLY_UB_SETS_V17=[
+  "ltr","ltc","fin","fic","msh","spm","who","40k","rex","bot","trk"
+];
+let generationMagicOnlyConfigV17=null;
+
+function currentMagicOnlyConfigV17(){
+  const enabled=$("magicOnlyEnabled")?.checked!==false;
+  const allowLotr=enabled && !!$("allowLotr")?.checked;
+  return {enabled,allowLotr};
+}
+
+function magicOnlyFilterV10(){
+  const config=generationMagicOnlyConfigV17||currentMagicOnlyConfigV17();
+  if(!config.enabled)return "";
+
+  const allowedBase=config.allowLotr
+    ? `(is:notuniversesbeyond or set:ltr or set:ltc)`
+    : `is:notuniversesbeyond`;
+  const excludedSets=MAGIC_ONLY_UB_SETS_V17
+    .filter(set=>!config.allowLotr || (set!=="ltr" && set!=="ltc"))
+    .map(set=>`-set:${set}`)
+    .join(" ");
+
+  return `${allowedBase} ${excludedSets}`.trim();
+}
+
+function withMagicOnlyV10(q){
+  q=String(q||"").trim();
+  const filter=magicOnlyFilterV10();
+  if(!q)return filter;
+  return filter?`${q} ${filter}`:q;
+}
+
+function updateMagicOnlyUiV17(){
+  const config=currentMagicOnlyConfigV17();
+  const button=$("magicOnlyBtn");
+  const description=$("magicOnlyDescription");
+  const lotr=$("allowLotr");
+
+  if(lotr)lotr.disabled=!config.enabled;
+
+  if(!config.enabled){
+    button.textContent="Magic Only : désactivé";
+    description.textContent="sans restriction Magic Only";
+  }else if(config.allowLotr){
+    button.textContent="Magic Only : activé + Seigneur des Anneaux";
+    description.textContent="Magic Only, avec exception pour Le Seigneur des Anneaux";
+  }else{
+    button.textContent="Magic Only : activé";
+    description.textContent="Magic Only / sans Universes Beyond";
+  }
+}
+
+function setMagicOnlyControlsLockedV17(locked){
+  $("magicOnlyBtn").disabled=locked;
+  $("magicOnlyEnabled").disabled=locked;
+  $("allowLotr").disabled=locked || !$("magicOnlyEnabled").checked;
+}
+
+const generateV16=generate;
+async function generateV17(){
+  generationMagicOnlyConfigV17=currentMagicOnlyConfigV17();
+  setMagicOnlyControlsLockedV17(true);
+  try{
+    await generateV16();
+  }finally{
+    generationMagicOnlyConfigV17=null;
+    setMagicOnlyControlsLockedV17(false);
+    updateMagicOnlyUiV17();
+  }
+}
+
+$("magicOnlyBtn").onclick=()=>{
+  const dialog=$("magicOnlyDialog");
+  if(typeof dialog.showModal==="function")dialog.showModal();
+  else dialog.setAttribute("open","");
+};
+$("magicOnlyEnabled").addEventListener("change",updateMagicOnlyUiV17);
+$("allowLotr").addEventListener("change",updateMagicOnlyUiV17);
+$("magicOnlyDialog").addEventListener("click",event=>{
+  if(event.target===$("magicOnlyDialog"))$("magicOnlyDialog").close();
+});
+$("generateBtn").onclick=()=>generateV17();
+updateMagicOnlyUiV17();
+
+function helpAlreadySeenV18(){
+  try{return localStorage.getItem(HELP_KEY_V18)==="1"}catch(e){return false}
+}
+function openHelpV18(){
+  const dialog=$("helpDialog");
+  if(typeof dialog.showModal==="function")dialog.showModal();
+  else dialog.setAttribute("open","");
+  setTimeout(()=>$("closeHelp")?.focus(),0);
+}
+function closeHelpV18(){
+  const dialog=$("helpDialog");
+  try{localStorage.setItem(HELP_KEY_V18,"1")}catch(e){}
+  if(typeof dialog.close==="function")dialog.close();
+  else dialog.removeAttribute("open");
+}
+$("helpBtn").onclick=openHelpV18;
+$("closeHelp").onclick=closeHelpV18;
+$("helpDialog").addEventListener("close",()=>{
+  try{localStorage.setItem(HELP_KEY_V18,"1")}catch(e){}
+});
+$("helpDialog").addEventListener("click",event=>{
+  if(event.target===$("helpDialog"))closeHelpV18();
+});
+if(!helpAlreadySeenV18())setTimeout(openHelpV18,0);
+
+</script>
+
+
+<script>
+(()=>{
+  const dialog=document.getElementById("aboutDialog");
+  const open=()=>{
+    if(typeof dialog.showModal==="function")dialog.showModal();
+    else dialog.setAttribute("open","");
+    setTimeout(()=>document.getElementById("closeAbout")?.focus(),0);
+  };
+  const close=()=>{
+    if(typeof dialog.close==="function")dialog.close();
+    else dialog.removeAttribute("open");
+  };
+  document.getElementById("aboutBtn").onclick=open;
+  document.getElementById("closeAbout").onclick=close;
+  dialog.addEventListener("click",event=>{if(event.target===dialog)close();});
+})();
+</script>
+<script>
+/* ===== MTGCampaignStartI18nV19 — interface bilingue français / anglais ===== */
+(()=>{
+  const STORAGE_KEY="magic_roguelite_campaign_start_language_v1";
+  const EXACT={"À propos":"About","À propos de MTGRogue":"About MTGRogue","MTGRogue — Assistant de début de campagne v1.0":"MTGRogue — Campaign Start Assistant v1.0","crée le cardpool permanent initial utilisé pour démarrer une nouvelle campagne.":"creates the initial permanent card pool used to start a new campaign.","Fonctionnement":"How it works","La liste est générée dans ce navigateur à partir de recherches Scryfall. Le résultat n’est pas enregistré automatiquement : copie-le ou télécharge-le avant de fermer la page.":"The list is generated in this browser from Scryfall searches. The result is not saved automatically: copy or download it before closing the page.","Services externes":"External services","Les recherches de cartes utilisent Scryfall. MTGRogue et Scryfall sont des projets indépendants.":"Card searches use Scryfall. MTGRogue and Scryfall are independent projects.","Contenu non officiel :":"Unofficial content:","MTGRogue est un contenu de fan non officiel autorisé par la Fan Content Policy. Il n’est ni approuvé ni soutenu par Wizards. Certaines parties des éléments utilisés appartiennent à Wizards of the Coast. © Wizards of the Coast LLC.":"MTGRogue is unofficial Fan Content permitted under the Fan Content Policy. It is not approved or endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. © Wizards of the Coast LLC.","MTGRogue est distribué gratuitement. Conserve cette section et la mention légale si tu partages ou modifies le logiciel.":"MTGRogue is distributed free of charge. Keep this section and the legal notice if you share or modify the software.","Génère la collection initiale : sortie texte, une carte par ligne.":"Generate the initial card pool as plain text, one card per line.","Langue":"Language","Choisis la langue de l’interface.":"Choose the interface language.","Affiche l’assistant en anglais.":"Display the assistant in English.","Utiliser l’anglais":"Use English","Affiche l’assistant en français.":"Display the assistant in French.","Utiliser le français":"Use French","Langue actuelle : anglais.":"Current language: English.","Langue actuelle : français.":"Current language: French.","Fermer":"Close","Génère la collection initiale : sortie texte, une carte par ligne.":"Generate the initial collection as plain text, one card per line.","Mode d’emploi":"Instructions","Génération":"Generation","L’outil tire des noms uniques via Scryfall. Contraintes appliquées :":"The tool draws unique names through Scryfall. Applied constraints:","légale en Vintage":"Vintage-legal","existe en papier":"available in paper","Magic Only / sans Universes Beyond":"Magic Only / no Universes Beyond","commune":"common","pour les cartes non-terrain demandées. Les terrains bicolores sont des non-bases communes ou inhabituelles, d’identité couleur strictement compatible, qui arrivent toujours engagés et produisent réellement les deux couleurs demandées.":"for the requested nonland cards. Two-color lands are common or uncommon nonbasic lands with an exact matching color identity. They always enter tapped and can actually produce both requested colors.","Générer la collection":"Generate collection","Magic Only : activé":"Magic Only: enabled","Magic Only : désactivé":"Magic Only: disabled","Magic Only : activé + Seigneur des Anneaux":"Magic Only: enabled + The Lord of the Rings","Copier la liste":"Copy list","Télécharger .txt":"Download .txt","Vider":"Clear","Paramètres Magic Only":"Magic Only settings","Activer le mode Magic Only":"Enable Magic Only","Exclut les cartes Universes Beyond de la collection générée.":"Exclude Universes Beyond cards from the generated collection.","Autoriser Le Seigneur des Anneaux":"Allow The Lord of the Rings","Ajoute comme exception les éditions LTR et LTC lorsque Magic Only est actif.":"Allow the LTR and LTC sets as exceptions while Magic Only is enabled.","Bienvenue dans l’assistant de début de campagne":"Welcome to the Campaign Start Assistant","Cette aide s’affiche uniquement lors de la première ouverture. Le bouton « Mode d’emploi » permet de la retrouver.":"This guide is shown only on first launch. Use the “Instructions” button to reopen it.","Cet assistant crée aléatoirement le":"This assistant randomly creates the","cardpool permanent initial":"initial permanent card pool","d’un nouveau joueur. Il produit une liste simple de noms de cartes, prête à être copiée dans l’assistant de run.":"of a new player. It produces a simple list of card names ready to be copied into the Run Assistant.","1. Choisis le filtre d’univers":"1. Choose the universe filter","Ouvre « Magic Only » pour garder uniquement les cartes issues de Magic, désactiver ce filtre, ou autoriser Le Seigneur des Anneaux comme exception.":"Open “Magic Only” to keep only cards from Magic, disable this filter, or allow The Lord of the Rings as an exception.","2. Lance la génération":"2. Start generation","« Générer la collection » interroge Scryfall et compose 630 cartes uniques conformes aux règles du cardpool initial.":"“Generate collection” queries Scryfall and builds 630 unique cards that follow the initial card-pool rules.","3. Vérifie le résultat":"3. Check the result","Le Résumé indique si chaque catégorie est complète. Le Journal détaille la progression et les éventuelles erreurs.":"The Summary shows whether every category is complete. The Log details progress and any errors.","4. Transfère la liste":"4. Transfer the list","Copie la sortie ou télécharge le fichier texte, puis ajoute cette liste au cardpool permanent du joueur dans l’assistant de run.":"Copy the output or download the text file, then add this list to the player’s permanent card pool in the Run Assistant.","Composition visée :":"Target composition:","100 communes de chaque couleur, 50 communes incolores, 5 communes pour chacune des 10 paires de couleurs et 3 terrains compatibles pour chacune de ces paires.":"100 commons of each color, 50 colorless commons, 5 commons for each of the 10 color pairs, and 3 matching lands for each pair.","À quoi servent les boutons ?":"What do the buttons do?","remplace la sortie actuelle par un nouveau tirage complet.":"replaces the current output with a complete new draw.","ouvre les paramètres du filtre Universes Beyond et de l’exception Seigneur des Anneaux.":"opens the Universes Beyond filter and The Lord of the Rings exception settings.","place tous les noms de cartes dans le presse-papiers, une carte par ligne.":"copies all card names to the clipboard, one card per line.","enregistre la même liste dans un fichier texte.":"saves the same list in a text file.","efface la sortie, le résumé et le journal sans lancer de nouveau tirage.":"clears the output, summary, and log without starting a new draw.","À savoir :":"Good to know:","la génération nécessite une connexion à Internet et peut prendre un peu de temps. Si une catégorie ne peut pas être complétée, l’assistant l’indique au lieu de produire silencieusement une collection incomplète.":"generation requires an Internet connection and may take a little time. If a category cannot be completed, the assistant reports it instead of silently producing an incomplete collection.","Commencer":"Get started","Sortie à copier":"Output to copy","La liste apparaîtra ici, une carte par ligne.":"The list will appear here, one card per line.","0 carte.":"0 cards.","Résumé":"Summary","Aucune génération lancée.":"No generation started.","Journal":"Log","Blanc":"White","Bleu":"Blue","Noir":"Black","Rouge":"Red","Vert":"Green","sans restriction Magic Only":"without Magic Only restrictions","Magic Only, avec exception pour Le Seigneur des Anneaux":"Magic Only, with an exception for The Lord of the Rings","Génération en cours…":"Generation in progress…","Génération terminée.":"Generation complete.","Liste copiée dans le presse-papiers.":"List copied to the clipboard.","Incomplet":"Incomplete","Catégorie":"Category","Tirées":"Drawn","Candidates strictes":"Strict candidates","État":"Status","Requête :":"Query:","Erreur Scryfall":"Scryfall error","Copie impossible :":"Copy failed:","ERREUR :":"ERROR:","Communes sans couleur":"Colorless commons","Terrain typé":"Typed land","Terrains non typés":"Untyped lands","Terrains engagés":"Tapped lands"};
+  const originalText=new WeakMap();
+  const originalAttributes=new WeakMap();
+  let language=localStorage.getItem(STORAGE_KEY)==="fr"?"fr":"en";
+
+  function dynamicTranslation(text){
+    
+    let match;
+    if((match=text.match(/^\[([^\]]+)\] (.+)$/)))return "["+match[1]+"] "+translateCore(match[2]);
+    if((match=text.match(/^Communes (Blanc|Bleu|Noir|Rouge|Vert)$/))){
+      const colors={Blanc:"White",Bleu:"Blue",Noir:"Black",Rouge:"Red",Vert:"Green"};
+      return colors[match[1]]+" commons";
+    }
+    if((match=text.match(/^Communes bicolores (.+) \((.+)\)$/)))return "Two-color commons "+match[1]+" ("+match[2]+")";
+    if((match=text.match(/^Terrains engagés (.+) \((.+)\)$/)))return "Tapped lands "+match[1]+" ("+match[2]+")";
+    if((match=text.match(/^Terrain typé (.+) \((.+)\)$/)))return "Typed land "+match[1]+" ("+match[2]+")";
+    if((match=text.match(/^Terrains non typés (.+) \((.+)\)$/)))return "Untyped lands "+match[1]+" ("+match[2]+")";
+    if((match=text.match(/^(.+) : recherche Scryfall…$/)))return translateCore(match[1])+": searching Scryfall…";
+    if((match=text.match(/^(.+) : seulement (\d+)\/(\d+) carte\(s\) trouvée\(s\) avec les contraintes\.$/)))return translateCore(match[1])+": only "+match[2]+"/"+match[3]+" card(s) found under the constraints.";
+    if((match=text.match(/^✓ (.+) : (\d+)\/(\d+) tirée\(s\), (\d+) candidate\(s\)(?: chargée\(s\))?\.$/)))return "✓ "+translateCore(match[1])+": "+match[2]+"/"+match[3]+" drawn, "+match[4]+" candidate(s) loaded.";
+    if((match=text.match(/^⚠ (.+)$/)))return "⚠ "+translateCore(match[1]);
+    if((match=text.match(/^(\d+) ligne\(s\)\. Objectif théorique : 630\.$/)))return match[1]+" line(s). Theoretical target: 630.";
+    if((match=text.match(/^(\d+) cartes en sortie$/)))return match[1]+" output cards";
+    if((match=text.match(/^(\d+)\/(\d+) catégories complètes$/)))return match[1]+"/"+match[2]+" complete categories";
+    if((match=text.match(/^inaccessible après (\d+) tentative\(s\) : (.+)$/)))return "unavailable after "+match[1]+" attempt(s): "+match[2];
+    if((match=text.match(/^(.+) : (.+)\. Nouvelle tentative (\d+)\/(\d+)…$/)))return translateCore(match[1])+": "+match[2]+". New attempt "+match[3]+"/"+match[4]+"…";
+    if((match=text.match(/^(.+) — (.+)$/)))return translateCore(match[1])+" — "+translateCore(match[2]);
+    if((match=text.match(/^(\d+) carte\.$/)))return match[1]+" card.";
+    if((match=text.match(/^(\d+) cartes\.$/)))return match[1]+" cards.";
+    return text;
+  
+  }
+
+  function translateCore(text){
+    const normalized=String(text??"").replace(/\s+/g," ").trim();
+    if(Object.prototype.hasOwnProperty.call(EXACT,normalized))return EXACT[normalized];
+    const dynamic=dynamicTranslation(normalized);
+    return dynamic!==normalized?dynamic:text;
+  }
+
+  function translatePreservingWhitespace(value){
+    const match=String(value??"").match(/^(\s*)([\s\S]*?)(\s*)$/);
+    if(!match)return value;
+    const core=match[2];
+    if(!core)return value;
+    const translated=translateCore(core);
+    return match[1]+translated+match[3];
+  }
+
+  function skipTextNode(node){
+    const parent=node.parentElement;
+    if(!parent)return true;
+    if(parent.closest("[data-i18n-skip]"))return true;
+    return ["SCRIPT","STYLE","TEXTAREA"].includes(parent.tagName)||
+      (parent.tagName==="PRE"&&parent.id!=="log");
+  }
+
+  function processTextNode(node){
+    if(skipTextNode(node))return;
+    let original=originalText.get(node);
+    const current=node.nodeValue;
+    if(language==="en"){
+      if(original==null || current!==translatePreservingWhitespace(original)){
+        original=current;
+        originalText.set(node,original);
+      }
+      const translated=translatePreservingWhitespace(original);
+      if(current!==translated)node.nodeValue=translated;
+    }else if(original!=null && current!==original){
+      node.nodeValue=original;
+    }
+  }
+
+  function processAttribute(element,name){
+    if(element.closest("[data-i18n-skip]"))return;
+    let values=originalAttributes.get(element);
+    if(!values){
+      values={};
+      originalAttributes.set(element,values);
+    }
+    const current=element.getAttribute(name);
+    if(current==null)return;
+    let original=values[name];
+    if(language==="en"){
+      if(original==null || current!==translatePreservingWhitespace(original)){
+        original=current;
+        values[name]=original;
+      }
+      const translated=translatePreservingWhitespace(original);
+      if(current!==translated)element.setAttribute(name,translated);
+    }else if(original!=null && current!==original){
+      element.setAttribute(name,original);
+    }
+  }
+
+  function processElement(element){
+    if(!element || element.nodeType!==1)return;
+    if(element.tagName==="OPTION" && !element.hasAttribute("value")){
+      element.setAttribute("value",element.textContent);
+    }
+    for(const name of ["placeholder","title","aria-label"]){
+      if(element.hasAttribute(name))processAttribute(element,name);
+    }
+    for(const child of element.childNodes){
+      if(child.nodeType===3)processTextNode(child);
+      else if(child.nodeType===1)processElement(child);
+    }
+  }
+
+  function apply(root=document.documentElement){
+    if(root.nodeType===3)processTextNode(root);
+    else processElement(root);
+    document.documentElement.lang=language;
+    document.title=language==="en"?"MTGRogue — Campaign Start Assistant v1.0":"MTGRogue — Assistant de début de campagne v1.0";
+  }
+
+  const observer=new MutationObserver(records=>{
+    for(const record of records){
+      if(record.type==="characterData"){
+        processTextNode(record.target);
+      }else if(record.type==="attributes"){
+        processAttribute(record.target,record.attributeName);
+      }else{
+        for(const node of record.addedNodes){
+          if(node.nodeType===3)processTextNode(node);
+          else if(node.nodeType===1)processElement(node);
+        }
+      }
+    }
+  });
+
+  function setLanguage(next){
+    language=next==="fr"?"fr":"en";
+    localStorage.setItem(STORAGE_KEY,language);
+    apply();
+    document.dispatchEvent(new CustomEvent("mtr-language-change",{
+      detail:{language}
+    }));
+  }
+
+  window["MTGCampaignStartI18nV19"]={
+    apply,
+    getLanguage:()=>language,
+    setLanguage,
+    translate:translateCore
+  };
+
+  apply();
+  observer.observe(document.body,{
+    subtree:true,
+    childList:true,
+    characterData:true,
+    attributes:true,
+    attributeFilter:["placeholder","title","aria-label"]
+  });
+})();
+</script>
+<script>
+(()=>{
+  const api=window["MTGCampaignStartI18nV19"];
+  if(!api)return;
+
+  const style=document.createElement("style");
+  style.id="languageStyleV19";
+  style.textContent=`
+    .header-actions-i18n{display:flex;gap:8px;align-items:center;flex:0 0 auto}
+    .language-options-i18n{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+    .language-option-i18n{background:var(--panel2);border:1px solid var(--border, var(--line));border-radius:13px;padding:12px}
+    .language-option-i18n strong{display:block;margin-bottom:5px}
+    @media(max-width:700px){
+      .header-actions-i18n{align-items:stretch;flex-direction:column}
+      .language-options-i18n{grid-template-columns:1fr}
+    }
+  `;
+  document.head.appendChild(style);
+
+  const header=document.querySelector(".header-inner");
+  const help=document.getElementById("helpBtn");
+  if(header&&help){
+    let actions=header.querySelector(".header-actions-base")||header.querySelector(".header-actions-i18n");
+    if(!actions){
+      actions=document.createElement("div");
+      help.replaceWith(actions);
+      actions.appendChild(help);
+    }
+    actions.classList.add("header-actions-i18n");
+    if(!document.getElementById("languageBtnV19")){
+      const button=document.createElement("button");
+      button.id="languageBtnV19";
+      button.className="secondary header-help";
+      button.type="button";
+      button.textContent="Langue";
+      actions.appendChild(button);
+    }
+  }
+
+  document.body.insertAdjacentHTML("beforeend",`
+    <dialog id="languageDialogV19" aria-labelledby="languageTitleV19">
+      <div class="dialog-body">
+        <h2 id="languageTitleV19">Langue</h2>
+        <p class="small">Choisis la langue de l’interface.</p>
+        <div class="language-options-i18n">
+          <div class="language-option-i18n">
+            <strong>English</strong>
+            <div class="small">Affiche l’assistant en anglais.</div>
+            <button id="languageEnglishV19" type="button">Utiliser l’anglais</button>
+          </div>
+          <div class="language-option-i18n">
+            <strong>Français</strong>
+            <div class="small">Affiche l’assistant en français.</div>
+            <button id="languageFrenchV19" type="button">Utiliser le français</button>
+          </div>
+        </div>
+        <div id="languageCurrentV19" class="small"></div>
+        <div class="row" style="justify-content:flex-end;margin-top:16px">
+          <button id="languageCloseV19" class="secondary" type="button">Fermer</button>
+        </div>
+      </div>
+    </dialog>
+  `);
+
+  const dialog=document.getElementById("languageDialogV19");
+  const open=()=>{
+    update();
+    if(typeof dialog.showModal==="function")dialog.showModal();
+    else dialog.setAttribute("open","");
+  };
+  const close=()=>{
+    if(typeof dialog.close==="function")dialog.close();
+    else dialog.removeAttribute("open");
+  };
+  const update=()=>{
+    const english=api.getLanguage()==="en";
+    document.getElementById("languageEnglishV19").disabled=english;
+    document.getElementById("languageFrenchV19").disabled=!english;
+    document.getElementById("languageCurrentV19").textContent=
+      english?"Langue actuelle : anglais.":"Langue actuelle : français.";
+    api.apply(document.getElementById("languageCurrentV19"));
+    api.apply();
+  };
+
+  document.getElementById("languageBtnV19").onclick=open;
+  document.getElementById("languageEnglishV19").onclick=()=>{
+    api.setLanguage("en");
+    update();
+  };
+  document.getElementById("languageFrenchV19").onclick=()=>{
+    api.setLanguage("fr");
+    update();
+  };
+  document.getElementById("languageCloseV19").onclick=close;
+  dialog.addEventListener("click",event=>{
+    if(event.target===dialog)close();
+  });
+  document.addEventListener("mtr-language-change",update);
+  update();
+})();
+</script>
+<script>
+(()=>{
+  const api=window.MTGCampaignStartI18nV19;
+  if(!api)return;
+  const renderSummaryBase=renderSummary;
+  renderSummary=function(){
+    const result=renderSummaryBase.apply(this,arguments);
+    api.apply(document.getElementById("summary"));
+    api.apply(document.getElementById("countInfo"));
+    return result;
+  };
+  const logBase=log;
+  log=function(){
+    const result=logBase.apply(this,arguments);
+    api.apply(document.getElementById("log"));
+    return result;
+  };
+  const updateMagicOnlyUiBase=updateMagicOnlyUiV17;
+  updateMagicOnlyUiV17=function(){
+    const result=updateMagicOnlyUiBase.apply(this,arguments);
+    api.apply(document.getElementById("magicOnlyBtn"));
+    api.apply(document.getElementById("magicOnlyDescription"));
+    return result;
+  };
+  const generateV17Base=generateV17;
+  generateV17=async function(){
+    try{
+      return await generateV17Base.apply(this,arguments);
+    }finally{
+      api.apply(document.getElementById("countInfo"));
+      api.apply(document.getElementById("summary"));
+      api.apply(document.getElementById("log"));
+    }
+  };
+})();
+</script>
+</body>
+</html>
