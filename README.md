@@ -21,7 +21,7 @@ Keep the files together in one folder. The complete public package is intended t
 
 - A recent version of Firefox, Chrome, or Edge on a desktop computer.
 - An internet connection for card searches, card images, and online deckbuilding data.
-- A way to play Magic and maintain decklists, such as paper cards, proxies where appropriate, or a digital platform.
+- A way to play Magic and maintain decklists, mainly Cockatrice.
 - One player and one Game Master. The GM prepares and pilots the opposing decks and resolves the few effects that are intentionally manual.
 
 No installation is required. Download the files and open each HTML assistant directly in your browser.
