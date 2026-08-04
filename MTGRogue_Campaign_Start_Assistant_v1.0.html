@@ -94,6 +94,7 @@ dialog::backdrop{background:rgba(5,3,10,.72);backdrop-filter:blur(3px)}
       <button id="magicOnlyBtn" class="secondary" type="button" aria-haspopup="dialog">Magic Only : activé</button>
       <button id="copyBtn" class="secondary" disabled>Copier la liste</button>
       <button id="downloadBtn" class="secondary" disabled>Télécharger .txt</button>
+      <button id="downloadCsvBtn" class="secondary" disabled>Télécharger .csv pour Moxfield</button>
       <button id="clearBtn" class="danger">Vider</button>
     </div>
   </section>
@@ -139,6 +140,7 @@ dialog::backdrop{background:rgba(5,3,10,.72);backdrop-filter:blur(3px)}
         <div class="help-button"><strong>Magic Only</strong> ouvre les paramètres du filtre Universes Beyond et de l’exception Seigneur des Anneaux.</div>
         <div class="help-button"><strong>Copier la liste</strong> place tous les noms de cartes dans le presse-papiers, une carte par ligne.</div>
         <div class="help-button"><strong>Télécharger .txt</strong> enregistre la même liste dans un fichier texte.</div>
+        <div class="help-button"><strong>Télécharger .csv pour Moxfield</strong> crée un fichier de collection directement importable dans Moxfield, avec un exemplaire de chaque carte.</div>
         <div class="help-button"><strong>Vider</strong> efface la sortie, le résumé et le journal sans lancer de nouveau tirage.</div>
       </div>
       <div class="help-tip"><strong>À savoir :</strong> la génération nécessite une connexion à Internet et peut prendre un peu de temps. Si une catégorie ne peut pas être complétée, l’assistant l’indique au lieu de produire silencieusement une collection incomplète.</div>
@@ -1303,7 +1305,7 @@ if(!helpAlreadySeenV18())setTimeout(openHelpV18,0);
 /* ===== MTGCampaignStartI18nV19 — interface bilingue français / anglais ===== */
 (()=>{
   const STORAGE_KEY="magic_roguelite_campaign_start_language_v1";
-  const EXACT={"À propos":"About","À propos de MTGRogue":"About MTGRogue","MTGRogue — Assistant de début de campagne v1.0":"MTGRogue — Campaign Start Assistant v1.0","crée le cardpool permanent initial utilisé pour démarrer une nouvelle campagne.":"creates the initial permanent card pool used to start a new campaign.","Fonctionnement":"How it works","La liste est générée dans ce navigateur à partir de recherches Scryfall. Le résultat n’est pas enregistré automatiquement : copie-le ou télécharge-le avant de fermer la page.":"The list is generated in this browser from Scryfall searches. The result is not saved automatically: copy or download it before closing the page.","Services externes":"External services","Les recherches de cartes utilisent Scryfall. MTGRogue et Scryfall sont des projets indépendants.":"Card searches use Scryfall. MTGRogue and Scryfall are independent projects.","Contenu non officiel :":"Unofficial content:","MTGRogue est un contenu de fan non officiel autorisé par la Fan Content Policy. Il n’est ni approuvé ni soutenu par Wizards. Certaines parties des éléments utilisés appartiennent à Wizards of the Coast. © Wizards of the Coast LLC.":"MTGRogue is unofficial Fan Content permitted under the Fan Content Policy. It is not approved or endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. © Wizards of the Coast LLC.","MTGRogue est distribué gratuitement. Conserve cette section et la mention légale si tu partages ou modifies le logiciel.":"MTGRogue is distributed free of charge. Keep this section and the legal notice if you share or modify the software.","Génère la collection initiale : sortie texte, une carte par ligne.":"Generate the initial card pool as plain text, one card per line.","Langue":"Language","Choisis la langue de l’interface.":"Choose the interface language.","Affiche l’assistant en anglais.":"Display the assistant in English.","Utiliser l’anglais":"Use English","Affiche l’assistant en français.":"Display the assistant in French.","Utiliser le français":"Use French","Langue actuelle : anglais.":"Current language: English.","Langue actuelle : français.":"Current language: French.","Fermer":"Close","Génère la collection initiale : sortie texte, une carte par ligne.":"Generate the initial collection as plain text, one card per line.","Mode d’emploi":"Instructions","Génération":"Generation","L’outil tire des noms uniques via Scryfall. Contraintes appliquées :":"The tool draws unique names through Scryfall. Applied constraints:","légale en Vintage":"Vintage-legal","existe en papier":"available in paper","Magic Only / sans Universes Beyond":"Magic Only / no Universes Beyond","commune":"common","pour les cartes non-terrain demandées. Les terrains bicolores sont des non-bases communes ou inhabituelles, d’identité couleur strictement compatible, qui arrivent toujours engagés et produisent réellement les deux couleurs demandées.":"for the requested nonland cards. Two-color lands are common or uncommon nonbasic lands with an exact matching color identity. They always enter tapped and can actually produce both requested colors.","Générer la collection":"Generate collection","Magic Only : activé":"Magic Only: enabled","Magic Only : désactivé":"Magic Only: disabled","Magic Only : activé + Seigneur des Anneaux":"Magic Only: enabled + The Lord of the Rings","Copier la liste":"Copy list","Télécharger .txt":"Download .txt","Vider":"Clear","Paramètres Magic Only":"Magic Only settings","Activer le mode Magic Only":"Enable Magic Only","Exclut les cartes Universes Beyond de la collection générée.":"Exclude Universes Beyond cards from the generated collection.","Autoriser Le Seigneur des Anneaux":"Allow The Lord of the Rings","Ajoute comme exception les éditions LTR et LTC lorsque Magic Only est actif.":"Allow the LTR and LTC sets as exceptions while Magic Only is enabled.","Bienvenue dans l’assistant de début de campagne":"Welcome to the Campaign Start Assistant","Cette aide s’affiche uniquement lors de la première ouverture. Le bouton « Mode d’emploi » permet de la retrouver.":"This guide is shown only on first launch. Use the “Instructions” button to reopen it.","Cet assistant crée aléatoirement le":"This assistant randomly creates the","cardpool permanent initial":"initial permanent card pool","d’un nouveau joueur. Il produit une liste simple de noms de cartes, prête à être copiée dans l’assistant de run.":"of a new player. It produces a simple list of card names ready to be copied into the Run Assistant.","1. Choisis le filtre d’univers":"1. Choose the universe filter","Ouvre « Magic Only » pour garder uniquement les cartes issues de Magic, désactiver ce filtre, ou autoriser Le Seigneur des Anneaux comme exception.":"Open “Magic Only” to keep only cards from Magic, disable this filter, or allow The Lord of the Rings as an exception.","2. Lance la génération":"2. Start generation","« Générer la collection » interroge Scryfall et compose 630 cartes uniques conformes aux règles du cardpool initial.":"“Generate collection” queries Scryfall and builds 630 unique cards that follow the initial card-pool rules.","3. Vérifie le résultat":"3. Check the result","Le Résumé indique si chaque catégorie est complète. Le Journal détaille la progression et les éventuelles erreurs.":"The Summary shows whether every category is complete. The Log details progress and any errors.","4. Transfère la liste":"4. Transfer the list","Copie la sortie ou télécharge le fichier texte, puis ajoute cette liste au cardpool permanent du joueur dans l’assistant de run.":"Copy the output or download the text file, then add this list to the player’s permanent card pool in the Run Assistant.","Composition visée :":"Target composition:","100 communes de chaque couleur, 50 communes incolores, 5 communes pour chacune des 10 paires de couleurs et 3 terrains compatibles pour chacune de ces paires.":"100 commons of each color, 50 colorless commons, 5 commons for each of the 10 color pairs, and 3 matching lands for each pair.","À quoi servent les boutons ?":"What do the buttons do?","remplace la sortie actuelle par un nouveau tirage complet.":"replaces the current output with a complete new draw.","ouvre les paramètres du filtre Universes Beyond et de l’exception Seigneur des Anneaux.":"opens the Universes Beyond filter and The Lord of the Rings exception settings.","place tous les noms de cartes dans le presse-papiers, une carte par ligne.":"copies all card names to the clipboard, one card per line.","enregistre la même liste dans un fichier texte.":"saves the same list in a text file.","efface la sortie, le résumé et le journal sans lancer de nouveau tirage.":"clears the output, summary, and log without starting a new draw.","À savoir :":"Good to know:","la génération nécessite une connexion à Internet et peut prendre un peu de temps. Si une catégorie ne peut pas être complétée, l’assistant l’indique au lieu de produire silencieusement une collection incomplète.":"generation requires an Internet connection and may take a little time. If a category cannot be completed, the assistant reports it instead of silently producing an incomplete collection.","Commencer":"Get started","Sortie à copier":"Output to copy","La liste apparaîtra ici, une carte par ligne.":"The list will appear here, one card per line.","0 carte.":"0 cards.","Résumé":"Summary","Aucune génération lancée.":"No generation started.","Journal":"Log","Blanc":"White","Bleu":"Blue","Noir":"Black","Rouge":"Red","Vert":"Green","sans restriction Magic Only":"without Magic Only restrictions","Magic Only, avec exception pour Le Seigneur des Anneaux":"Magic Only, with an exception for The Lord of the Rings","Génération en cours…":"Generation in progress…","Génération terminée.":"Generation complete.","Liste copiée dans le presse-papiers.":"List copied to the clipboard.","Incomplet":"Incomplete","Catégorie":"Category","Tirées":"Drawn","Candidates strictes":"Strict candidates","État":"Status","Requête :":"Query:","Erreur Scryfall":"Scryfall error","Copie impossible :":"Copy failed:","ERREUR :":"ERROR:","Communes sans couleur":"Colorless commons","Terrain typé":"Typed land","Terrains non typés":"Untyped lands","Terrains engagés":"Tapped lands"};
+  const EXACT={"À propos":"About","À propos de MTGRogue":"About MTGRogue","MTGRogue — Assistant de début de campagne v1.0":"MTGRogue — Campaign Start Assistant v1.0","crée le cardpool permanent initial utilisé pour démarrer une nouvelle campagne.":"creates the initial permanent card pool used to start a new campaign.","Fonctionnement":"How it works","La liste est générée dans ce navigateur à partir de recherches Scryfall. Le résultat n’est pas enregistré automatiquement : copie-le ou télécharge-le avant de fermer la page.":"The list is generated in this browser from Scryfall searches. The result is not saved automatically: copy or download it before closing the page.","Services externes":"External services","Les recherches de cartes utilisent Scryfall. MTGRogue et Scryfall sont des projets indépendants.":"Card searches use Scryfall. MTGRogue and Scryfall are independent projects.","Contenu non officiel :":"Unofficial content:","MTGRogue est un contenu de fan non officiel autorisé par la Fan Content Policy. Il n’est ni approuvé ni soutenu par Wizards. Certaines parties des éléments utilisés appartiennent à Wizards of the Coast. © Wizards of the Coast LLC.":"MTGRogue is unofficial Fan Content permitted under the Fan Content Policy. It is not approved or endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. © Wizards of the Coast LLC.","MTGRogue est distribué gratuitement. Conserve cette section et la mention légale si tu partages ou modifies le logiciel.":"MTGRogue is distributed free of charge. Keep this section and the legal notice if you share or modify the software.","Génère la collection initiale : sortie texte, une carte par ligne.":"Generate the initial card pool as plain text, one card per line.","Langue":"Language","Choisis la langue de l’interface.":"Choose the interface language.","Affiche l’assistant en anglais.":"Display the assistant in English.","Utiliser l’anglais":"Use English","Affiche l’assistant en français.":"Display the assistant in French.","Utiliser le français":"Use French","Langue actuelle : anglais.":"Current language: English.","Langue actuelle : français.":"Current language: French.","Fermer":"Close","Génère la collection initiale : sortie texte, une carte par ligne.":"Generate the initial collection as plain text, one card per line.","Mode d’emploi":"Instructions","Génération":"Generation","L’outil tire des noms uniques via Scryfall. Contraintes appliquées :":"The tool draws unique names through Scryfall. Applied constraints:","légale en Vintage":"Vintage-legal","existe en papier":"available in paper","Magic Only / sans Universes Beyond":"Magic Only / no Universes Beyond","commune":"common","pour les cartes non-terrain demandées. Les terrains bicolores sont des non-bases communes ou inhabituelles, d’identité couleur strictement compatible, qui arrivent toujours engagés et produisent réellement les deux couleurs demandées.":"for the requested nonland cards. Two-color lands are common or uncommon nonbasic lands with an exact matching color identity. They always enter tapped and can actually produce both requested colors.","Générer la collection":"Generate collection","Magic Only : activé":"Magic Only: enabled","Magic Only : désactivé":"Magic Only: disabled","Magic Only : activé + Seigneur des Anneaux":"Magic Only: enabled + The Lord of the Rings","Copier la liste":"Copy list","Télécharger .txt":"Download .txt","Télécharger .csv pour Moxfield":"Download .csv for Moxfield","crée un fichier de collection directement importable dans Moxfield, avec un exemplaire de chaque carte.":"creates a collection file that can be imported directly into Moxfield, with one copy of each card.","CSV Moxfield téléchargé.":"Moxfield CSV downloaded.","Aucune carte à exporter vers Moxfield.":"No cards to export to Moxfield.","Vider":"Clear","Paramètres Magic Only":"Magic Only settings","Activer le mode Magic Only":"Enable Magic Only","Exclut les cartes Universes Beyond de la collection générée.":"Exclude Universes Beyond cards from the generated collection.","Autoriser Le Seigneur des Anneaux":"Allow The Lord of the Rings","Ajoute comme exception les éditions LTR et LTC lorsque Magic Only est actif.":"Allow the LTR and LTC sets as exceptions while Magic Only is enabled.","Bienvenue dans l’assistant de début de campagne":"Welcome to the Campaign Start Assistant","Cette aide s’affiche uniquement lors de la première ouverture. Le bouton « Mode d’emploi » permet de la retrouver.":"This guide is shown only on first launch. Use the “Instructions” button to reopen it.","Cet assistant crée aléatoirement le":"This assistant randomly creates the","cardpool permanent initial":"initial permanent card pool","d’un nouveau joueur. Il produit une liste simple de noms de cartes, prête à être copiée dans l’assistant de run.":"of a new player. It produces a simple list of card names ready to be copied into the Run Assistant.","1. Choisis le filtre d’univers":"1. Choose the universe filter","Ouvre « Magic Only » pour garder uniquement les cartes issues de Magic, désactiver ce filtre, ou autoriser Le Seigneur des Anneaux comme exception.":"Open “Magic Only” to keep only cards from Magic, disable this filter, or allow The Lord of the Rings as an exception.","2. Lance la génération":"2. Start generation","« Générer la collection » interroge Scryfall et compose 630 cartes uniques conformes aux règles du cardpool initial.":"“Generate collection” queries Scryfall and builds 630 unique cards that follow the initial card-pool rules.","3. Vérifie le résultat":"3. Check the result","Le Résumé indique si chaque catégorie est complète. Le Journal détaille la progression et les éventuelles erreurs.":"The Summary shows whether every category is complete. The Log details progress and any errors.","4. Transfère la liste":"4. Transfer the list","Copie la sortie ou télécharge le fichier texte, puis ajoute cette liste au cardpool permanent du joueur dans l’assistant de run.":"Copy the output or download the text file, then add this list to the player’s permanent card pool in the Run Assistant.","Composition visée :":"Target composition:","100 communes de chaque couleur, 50 communes incolores, 5 communes pour chacune des 10 paires de couleurs et 3 terrains compatibles pour chacune de ces paires.":"100 commons of each color, 50 colorless commons, 5 commons for each of the 10 color pairs, and 3 matching lands for each pair.","À quoi servent les boutons ?":"What do the buttons do?","remplace la sortie actuelle par un nouveau tirage complet.":"replaces the current output with a complete new draw.","ouvre les paramètres du filtre Universes Beyond et de l’exception Seigneur des Anneaux.":"opens the Universes Beyond filter and The Lord of the Rings exception settings.","place tous les noms de cartes dans le presse-papiers, une carte par ligne.":"copies all card names to the clipboard, one card per line.","enregistre la même liste dans un fichier texte.":"saves the same list in a text file.","efface la sortie, le résumé et le journal sans lancer de nouveau tirage.":"clears the output, summary, and log without starting a new draw.","À savoir :":"Good to know:","la génération nécessite une connexion à Internet et peut prendre un peu de temps. Si une catégorie ne peut pas être complétée, l’assistant l’indique au lieu de produire silencieusement une collection incomplète.":"generation requires an Internet connection and may take a little time. If a category cannot be completed, the assistant reports it instead of silently producing an incomplete collection.","Commencer":"Get started","Sortie à copier":"Output to copy","La liste apparaîtra ici, une carte par ligne.":"The list will appear here, one card per line.","0 carte.":"0 cards.","Résumé":"Summary","Aucune génération lancée.":"No generation started.","Journal":"Log","Blanc":"White","Bleu":"Blue","Noir":"Black","Rouge":"Red","Vert":"Green","sans restriction Magic Only":"without Magic Only restrictions","Magic Only, avec exception pour Le Seigneur des Anneaux":"Magic Only, with an exception for The Lord of the Rings","Génération en cours…":"Generation in progress…","Génération terminée.":"Generation complete.","Liste copiée dans le presse-papiers.":"List copied to the clipboard.","Incomplet":"Incomplete","Catégorie":"Category","Tirées":"Drawn","Candidates strictes":"Strict candidates","État":"Status","Requête :":"Query:","Erreur Scryfall":"Scryfall error","Copie impossible :":"Copy failed:","ERREUR :":"ERROR:","Communes sans couleur":"Colorless commons","Terrain typé":"Typed land","Terrains non typés":"Untyped lands","Terrains engagés":"Tapped lands"};
   const originalText=new WeakMap();
   const originalAttributes=new WeakMap();
   let language=localStorage.getItem(STORAGE_KEY)==="fr"?"fr":"en";
@@ -1595,6 +1597,102 @@ if(!helpAlreadySeenV18())setTimeout(openHelpV18,0);
       api.apply(document.getElementById("log"));
     }
   };
+})();
+</script>
+
+<script>
+/* ===== PATCH v1.10 : export CSV Moxfield =====
+   - exporte la sortie courante comme collection Moxfield ;
+   - une ligne par nom de carte, avec agrégation des doublons éventuels ;
+   - utilise le format CSV complet de collection pour préserver la compatibilité.
+*/
+(()=>{
+  const button=document.getElementById("downloadCsvBtn");
+  const output=document.getElementById("output");
+  if(!button||!output)return;
+
+  function cleanCardLineV110(line){
+    let value=String(line||"").trim();
+    if(!value)return "";
+    value=value.replace(/^\s*\d+\s*x?\s+/i,"").trim();
+    return value;
+  }
+
+  function cardCountsV110(){
+    const byKey=new Map();
+    for(const raw of String(output.value||"").split(/\r?\n/)){
+      const name=cleanCardLineV110(raw);
+      if(!name)continue;
+      const key=name.toLocaleLowerCase("en-US");
+      const existing=byKey.get(key);
+      if(existing)existing.count++;
+      else byKey.set(key,{name,count:1});
+    }
+    return [...byKey.values()];
+  }
+
+  function csvCellV110(value){
+    return `"${String(value??"").replace(/"/g,'""')}"`;
+  }
+
+  function buildMoxfieldCsvV110(){
+    const header=[
+      "Count","Tradelist Count","Name","Edition","Condition","Language",
+      "Foil","Tags","Last Modified","Collector Number","Alter","Proxy","Purchase Price"
+    ];
+    const rows=[header.map(csvCellV110).join(",")];
+    for(const card of cardCountsV110()){
+      rows.push([
+        card.count,0,card.name,"","Near Mint","English","","","","","","",""
+      ].map(csvCellV110).join(","));
+    }
+    return rows.join("\r\n")+"\r\n";
+  }
+
+  function updateCsvButtonV110(){
+    button.disabled=cardCountsV110().length===0;
+  }
+
+  function downloadMoxfieldCsvV110(){
+    if(!cardCountsV110().length){
+      if(typeof log==="function")log("Aucune carte à exporter vers Moxfield.");
+      updateCsvButtonV110();
+      return;
+    }
+    const csv="\uFEFF"+buildMoxfieldCsvV110();
+    const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="MTGRogue_Initial_Card_Pool_Moxfield.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),0);
+    if(typeof log==="function")log("CSV Moxfield téléchargé.");
+  }
+
+  button.addEventListener("click",downloadMoxfieldCsvV110);
+  output.addEventListener("input",updateCsvButtonV110);
+  new MutationObserver(updateCsvButtonV110).observe(output,{attributes:true,childList:true,subtree:true});
+
+  // Les générations et le bouton Vider modifient la propriété value, qui n'est
+  // pas toujours observée par MutationObserver. On synchronise après chaque clic.
+  document.getElementById("generateBtn")?.addEventListener("click",()=>{
+    button.disabled=true;
+    const timer=setInterval(()=>{
+      updateCsvButtonV110();
+      if(!document.getElementById("generateBtn")?.disabled)clearInterval(timer);
+    },150);
+  });
+  document.getElementById("clearBtn")?.addEventListener("click",()=>setTimeout(updateCsvButtonV110,0));
+
+  window.MTGCampaignStartCsvV110={
+    cardCounts:cardCountsV110,
+    buildCsv:buildMoxfieldCsvV110,
+    updateButton:updateCsvButtonV110
+  };
+  updateCsvButtonV110();
 })();
 </script>
 </body>
